@@ -141,6 +141,8 @@ let bidensStarted = false;
 
 let rulesShown = false;
 
+let currentlyGambling = false;
+
 function createBoard() {
     const board = document.getElementById('chessboard');
     
@@ -256,6 +258,7 @@ function flipBoard() {
 
 function onSquareClick(event) {
     if (checkmate) { return null; }
+    if (currentlyGambling) { return null; }
     
     const square = event.currentTarget;
     const row = square.dataset.row;
@@ -888,6 +891,7 @@ function viewBoard() {
 }
 
 function gamble() {
+    currentlyGambling = true;
     const startSound = new Audio('assets/audio/startGamble.wav');
     startSound.volume = 0.32;
     if (!mute) { startSound.play(); }
@@ -968,6 +972,7 @@ function gamble() {
                                             }
                                         }
                                         initialBoard = lastBoard;
+                                        currentlyGambling = false;
                                         resolve();
                                     }, 1200);
                                 }
@@ -1011,6 +1016,7 @@ function gamble() {
                                         }
                                     }
                                     initialBoard = lastBoard;
+                                    currentlyGambling = false;
                                     resolve();
                                 }, 5200);
                             }
@@ -1024,6 +1030,7 @@ function gamble() {
             randomiseSlots(1, false);
             randomiseSlots(2, true);
             spins--;
+
             
         });
 
@@ -1122,7 +1129,10 @@ async function updateBoard() {
             if (flipped) { row = (colLength-r)-1; col = (rowLength-c)-1; }
             else { row = r; col = c; }
             if (initialBoard[row][col] !== ' ' && initialBoard[row][col].toLowerCase() !== 'a' && !casinoCaptured) {
-                await gamble();
+                if (!currentlyGambling) {
+                    currentlyGambling = true;
+                    await gamble();
+                }
             } else if (initialBoard[row][col].toLowerCase() === 'a' && !casinoCaptured) {
                 casinoCaptured = true;
                 for (let xr = (colLength/2)-1; xr <= (colLength/2); xr++) {
@@ -1351,6 +1361,7 @@ async function updateBoard() {
         rulesButton.classList.add('invisible');
         viewButton.classList.remove('invisible');
     }
+
 }
 
 createBoard();
