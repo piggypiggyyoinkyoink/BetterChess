@@ -1074,7 +1074,13 @@ async function updateBoard() {
             initialBoard[(colLength/2)-2] = ' '.repeat((rowLength/2)-1) + whiteTrainPassengers.join('') + ' '.repeat((rowLength/2)-1);
             initialBoard[(colLength/2)+1] = ' '.repeat((rowLength/2)-1) + blackTrainPassengers.join('') + ' '.repeat((rowLength/2)-1);
         }
-        
+        // Check if train arrival causes instant win
+        if (currentTurn == 0 && inCheck(initialBoard) === "black") {
+            checkmate = true;
+        }
+        if (currentTurn == 1 && inCheck(initialBoard) === "white") {
+            checkmate = true;
+        }
         trainArrived = true;
     }
     if (movesUntilDeparture === 0 ) {
