@@ -145,6 +145,8 @@ let currentlyGambling = false;
 
 let joeBidenHasGambled = false;
 
+let hitByTrain = []
+
 function createBoard() {
     const board = document.getElementById('chessboard');
     
@@ -1105,10 +1107,19 @@ async function updateBoard() {
         sound.volume = 0.6;
         sound.play();
         
+        // check if arriving train runs over any kings
         if (initialBoard[(colLength/2)-2].includes('k') || initialBoard[(colLength/2)+1].includes('k')) {
             checkmate = true;
+            hitByTrain.push("black");
         } else if (initialBoard[(colLength/2)-2].includes('K') || initialBoard[(colLength/2)+1].includes('K')) {
             checkmate = true;
+            hitByTrain.push("white");
+        } else if (initialBoard[(colLength/2)+1].includes('k') || initialBoard[(colLength/2)+1].includes('K')) {
+            checkmate = true;
+            hitByTrain.push("black");
+        } else if (initialBoard[(colLength/2)-2].includes('k') || initialBoard[(colLength/2)-2].includes('K')) {
+            checkmate = true;
+            hitByTrain.push("white");
         } else {
             initialBoard[(colLength/2)-2] = ' '.repeat((rowLength/2)-1) + whiteTrainPassengers.join('') + ' '.repeat((rowLength/2)-1);
             initialBoard[(colLength/2)+1] = ' '.repeat((rowLength/2)-1) + blackTrainPassengers.join('') + ' '.repeat((rowLength/2)-1);
@@ -1159,9 +1170,23 @@ async function updateBoard() {
         }
         
         if ((blackTrainPassengers.includes('k') || whiteTrainPassengers.includes('k')) && (blackTrainPassengers.includes('K') || whiteTrainPassengers.includes('K'))) {
+            console.log('stalemate');
             stalemate = true;
         }
-        
+        // Check if departing train runs over any kings
+        if ((initialBoard[(colLength/2)-2].includes('k') || initialBoard[(colLength/2)+1].includes('k')) && !blackTrainPassengers.includes('k') && !whiteTrainPassengers.includes('k')) {
+            checkmate = true;
+            hitByTrain.push("black");
+        } else if ((initialBoard[(colLength/2)-2].includes('K') || initialBoard[(colLength/2)+1].includes('K')) && !blackTrainPassengers.includes('K') && !whiteTrainPassengers.includes('K')) {
+            checkmate = true;
+            hitByTrain.push("white");
+        } else if ((initialBoard[(colLength/2)+1].includes('k') || initialBoard[(colLength/2)+1].includes('K')) && !blackTrainPassengers.includes('k') && !whiteTrainPassengers.includes('K')) {
+            checkmate = true;
+            hitByTrain.push("black");
+        } else if ((initialBoard[(colLength/2)-2].includes('k') || initialBoard[(colLength/2)-2].includes('K')) && !blackTrainPassengers.includes('k') && !whiteTrainPassengers.includes('K')) {
+            checkmate = true;
+            hitByTrain.push("white");
+        }
         initialBoard[(colLength/2)-2] = ' '.repeat(rowLength);
         initialBoard[(colLength/2)+1] = ' '.repeat(rowLength);
         
@@ -1434,9 +1459,9 @@ async function updateBoard() {
     }
     if (checkmate || stalemate) {
         let winningText = '';
-        if (inCheck(initialBoard) == 'white') {
+        if ((inCheck(initialBoard) == 'white' || hitByTrain.includes('white')) && !hitByTrain.includes('black')) {
             winningText = 'Black wins';
-        } else if (inCheck(initialBoard) == 'black') {
+        } else if ((inCheck(initialBoard) == 'black' || hitByTrain.includes('black')) && !hitByTrain.includes('white')) {
             winningText = 'White wins';
         } else {
             winningText = 'Stalemate'
