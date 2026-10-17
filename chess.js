@@ -742,7 +742,7 @@ function select(square, row, col) {
                 selectedOldSquare = null;
             }
         }
-    } else if (selectedOldSquare == null && piece !== ' ' && piece !== 'j' & piece !== 'J') {
+    } else if (selectedOldSquare == null && piece !== ' ' && piece !== 'j' && piece !== 'J') {
         if (currentTurn == null || (piece == piece.toLowerCase()) == currentTurn) {
             console.log(`Selecting piece`);
             selectedOldSquare = square;
@@ -1211,12 +1211,41 @@ async function updateBoard() {
             bidensStarted = true;
         } else {
             if (initialBoard.join('').includes('j')) {
-                let row = Math.round(Math.random() * (colLength-1));
-                let col = Math.round(Math.random() * (rowLength-1));
-                
-                while (initialBoard[row][col] == 'k' || initialBoard[row][col] == 'K') {
+                // Black Joe
+                let possiblePositions = [];
+                if (gambleBoard[blackJoeSquare.dataset.row][blackJoeSquare.dataset.col] === 'w') {
+                    for (let r = 0; r < colLength; r++) {
+                        for (let c = 0; c < rowLength; c++) {
+                            if (initialBoard[r][c].toUpperCase() === initialBoard[r][c] && initialBoard[r][c] !== ' ' && initialBoard[r][c] !== 'k' && initialBoard[r][c] !== 'K') {
+                                possiblePositions.push({ dataset: { row: r, col: c } });
+                            }
+                        }
+                    }
+                } else if (gambleBoard[blackJoeSquare.dataset.row][blackJoeSquare.dataset.col] === 'l') {
+                    for (let r = 0; r < colLength; r++) {
+                        for (let c = 0; c < rowLength; c++) {
+                            if (initialBoard[r][c].toLowerCase() === initialBoard[r][c] && initialBoard[r][c] !== ' ' && initialBoard[r][c] !== 'k' && initialBoard[r][c] !== 'K') {
+                                possiblePositions.push({ dataset: { row: r, col: c } });
+                            }
+                        }
+                    }
+                }
+                let row;
+                let col;
+                if (possiblePositions.length > 0) {
+                    const randomIndex = Math.floor(Math.random() * possiblePositions.length);
+                    const randomPosition = possiblePositions[randomIndex];
+                    row = randomPosition.dataset.row;
+                    col = randomPosition.dataset.col;
+                } else {
+
                     row = Math.round(Math.random() * (colLength-1));
                     col = Math.round(Math.random() * (rowLength-1));
+                    
+                    while (initialBoard[row][col] == 'k' || initialBoard[row][col] == 'K') {
+                        row = Math.round(Math.random() * (colLength-1));
+                        col = Math.round(Math.random() * (rowLength-1));
+                    }
                 }
 
                 for (let r = 0; r < rowLength; r++) {
@@ -1231,12 +1260,41 @@ async function updateBoard() {
                 bidenSound = new Audio('assets/audio/joebiden.wav');
             }
             if (initialBoard.join('').includes('J')) {
-                let row = Math.round(Math.random() * (colLength-1));
-                let col = Math.round(Math.random() * (rowLength-1));
-                
-                while (initialBoard[row][col] == 'k' || initialBoard[row][col] == 'K') {
+                // White Joe
+                let possiblePositions = [];
+                if (gambleBoard[whiteJoeSquare.dataset.row][whiteJoeSquare.dataset.col] === 'w') {
+                    for (let r = 0; r < colLength; r++) {
+                        for (let c = 0; c < rowLength; c++) {
+                            if (initialBoard[r][c].toLowerCase() === initialBoard[r][c] && initialBoard[r][c] !== ' ' && initialBoard[r][c] !== 'k' && initialBoard[r][c] !== 'K') {
+                                possiblePositions.push({ dataset: { row: r, col: c } });
+                            }
+                        }
+                    }
+                } else if (gambleBoard[whiteJoeSquare.dataset.row][whiteJoeSquare.dataset.col] === 'l' ) {
+                    for (let r = 0; r < colLength; r++) {
+                        for (let c = 0; c < rowLength; c++) {
+                            if (initialBoard[r][c].toUpperCase() === initialBoard[r][c] && initialBoard[r][c] !== ' ' && initialBoard[r][c] !== 'k' && initialBoard[r][c] !== 'K') {
+                                possiblePositions.push({ dataset: { row: r, col: c } });
+                            }
+                        }
+                    }
+                }
+                let row;
+                let col;
+                if (possiblePositions.length > 0) {
+                    const randomIndex = Math.floor(Math.random() * possiblePositions.length);
+                    const randomPosition = possiblePositions[randomIndex];
+                    row = randomPosition.dataset.row;
+                    col = randomPosition.dataset.col;
+                } else {
+
                     row = Math.round(Math.random() * (colLength-1));
                     col = Math.round(Math.random() * (rowLength-1));
+                    
+                    while (initialBoard[row][col] == 'k' || initialBoard[row][col] == 'K') {
+                        row = Math.round(Math.random() * (colLength-1));
+                        col = Math.round(Math.random() * (rowLength-1));
+                    }
                 }
                 
                 for (let r = 0; r < colLength; r++) {
