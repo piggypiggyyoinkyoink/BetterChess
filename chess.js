@@ -1109,21 +1109,24 @@ async function updateBoard() {
         
         // check if arriving train runs over any kings
         if (initialBoard[(colLength/2)-2].includes('k') || initialBoard[(colLength/2)+1].includes('k')) {
-            checkmate = true;
             hitByTrain.push("black");
-        } else if (initialBoard[(colLength/2)-2].includes('K') || initialBoard[(colLength/2)+1].includes('K')) {
-            checkmate = true;
+        } if (initialBoard[(colLength/2)-2].includes('K') || initialBoard[(colLength/2)+1].includes('K')) {
             hitByTrain.push("white");
-        } else if (initialBoard[(colLength/2)+1].includes('k') || initialBoard[(colLength/2)+1].includes('K')) {
-            checkmate = true;
+        } if (initialBoard[(colLength/2)+1].includes('k') || initialBoard[(colLength/2)+1].includes('K')) {
             hitByTrain.push("black");
-        } else if (initialBoard[(colLength/2)-2].includes('k') || initialBoard[(colLength/2)-2].includes('K')) {
-            checkmate = true;
+        } if (initialBoard[(colLength/2)-2].includes('k') || initialBoard[(colLength/2)-2].includes('K')) {
             hitByTrain.push("white");
-        } else {
-            initialBoard[(colLength/2)-2] = ' '.repeat((rowLength/2)-1) + whiteTrainPassengers.join('') + ' '.repeat((rowLength/2)-1);
-            initialBoard[(colLength/2)+1] = ' '.repeat((rowLength/2)-1) + blackTrainPassengers.join('') + ' '.repeat((rowLength/2)-1);
         }
+        initialBoard[(colLength/2)-2] = ' '.repeat((rowLength/2)-1) + whiteTrainPassengers.join('') + ' '.repeat((rowLength/2)-1);
+        initialBoard[(colLength/2)+1] = ' '.repeat((rowLength/2)-1) + blackTrainPassengers.join('') + ' '.repeat((rowLength/2)-1);
+        
+        if (hitByTrain.length > 0) {
+            checkmate = true;
+        }
+
+        // Save board state after train arrival
+        // so if Joe Biden gambles it doesnt revive everyone who was hit by the train
+        lastBoard = structuredClone(initialBoard);
         // Check if train arrival causes instant win
         if (currentTurn == 0 && inCheck(initialBoard) === "black") {
             checkmate = true;
@@ -1132,9 +1135,6 @@ async function updateBoard() {
             checkmate = true;
         }
         trainArrived = true;
-        // Save board state after train arrival
-        // so if Joe Biden gambles it doesnt revive everyone who was hit by the train
-        lastBoard = structuredClone(initialBoard);
     }
     if (movesUntilDeparture === 0 ) {
         console.log('train departure');
@@ -1175,18 +1175,19 @@ async function updateBoard() {
         }
         // Check if departing train runs over any kings
         if ((initialBoard[(colLength/2)-2].includes('k') || initialBoard[(colLength/2)+1].includes('k')) && !blackTrainPassengers.includes('k') && !whiteTrainPassengers.includes('k')) {
-            checkmate = true;
             hitByTrain.push("black");
-        } else if ((initialBoard[(colLength/2)-2].includes('K') || initialBoard[(colLength/2)+1].includes('K')) && !blackTrainPassengers.includes('K') && !whiteTrainPassengers.includes('K')) {
-            checkmate = true;
+        } if ((initialBoard[(colLength/2)-2].includes('K') || initialBoard[(colLength/2)+1].includes('K')) && !blackTrainPassengers.includes('K') && !whiteTrainPassengers.includes('K')) {
             hitByTrain.push("white");
-        } else if ((initialBoard[(colLength/2)+1].includes('k') || initialBoard[(colLength/2)+1].includes('K')) && !blackTrainPassengers.includes('k') && !whiteTrainPassengers.includes('K')) {
-            checkmate = true;
+        } if ((initialBoard[(colLength/2)+1].includes('k') || initialBoard[(colLength/2)+1].includes('K')) && !blackTrainPassengers.includes('k') && !whiteTrainPassengers.includes('K')) {
             hitByTrain.push("black");
-        } else if ((initialBoard[(colLength/2)-2].includes('k') || initialBoard[(colLength/2)-2].includes('K')) && !blackTrainPassengers.includes('k') && !whiteTrainPassengers.includes('K')) {
-            checkmate = true;
+        } if ((initialBoard[(colLength/2)-2].includes('k') || initialBoard[(colLength/2)-2].includes('K')) && !blackTrainPassengers.includes('k') && !whiteTrainPassengers.includes('K')) {
             hitByTrain.push("white");
         }
+
+        if (hitByTrain.length > 0) {
+            checkmate = true;
+        }
+
         initialBoard[(colLength/2)-2] = ' '.repeat(rowLength);
         initialBoard[(colLength/2)+1] = ' '.repeat(rowLength);
         
