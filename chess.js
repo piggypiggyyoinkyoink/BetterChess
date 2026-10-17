@@ -143,6 +143,8 @@ let rulesShown = false;
 
 let currentlyGambling = false;
 
+let joeBidenHasGambled = false;
+
 function createBoard() {
     const board = document.getElementById('chessboard');
     
@@ -1059,6 +1061,45 @@ async function updateBoard() {
             }
         }
     }
+    rowloop: for (let r = (colLength/2)-1; r <= (colLength/2); r++) {
+        for (let c = rowLength-2; c < rowLength; c++) {
+            let row;
+            let col;
+            if (flipped) { row = (colLength-r)-1; col = (rowLength-c)-1; }
+            else { row = r; col = c; }
+            if (initialBoard[row][col] !== ' ' && initialBoard[row][col].toLowerCase() !== 'a' && !casinoCaptured) {
+                if (!currentlyGambling) {
+                    if (initialBoard[row][col].toLowerCase() === 'j') {
+                        console.log(lastBoard);
+                        console.log(lastBoard);
+                        // Prevent Joe Biden from infinitely gambling
+                        if (!joeBidenHasGambled) {
+                            // Prevent Joe Biden from despawning after gambling
+                            lastBoard = structuredClone(initialBoard);
+                            joeBidenHasGambled = true;
+                            currentlyGambling = true;
+                            await gamble();
+                        } 
+                    } else {
+                        currentlyGambling = true;
+                        await gamble();
+                    }
+                }
+            } else if (initialBoard[row][col].toLowerCase() === 'a' && !casinoCaptured) {
+                casinoCaptured = true;
+                for (let xr = (colLength/2)-1; xr <= (colLength/2); xr++) {
+                    for (let xc = rowLength-2; xc < rowLength; xc++) {
+                        let xrow;
+                        let xcol;
+                        if (flipped) { xrow = (colLength-xr)-1; xcol = (rowLength-xc)-1; }
+                        else { xrow = xr; xcol = xc; }
+                        initialBoard[xrow] = initialBoard[xrow].substring(0, xcol) + 'x' + initialBoard[xrow].substring(parseInt(xcol) + 1);
+                    }
+                }
+                break rowloop;
+            }
+        }
+    }
     if (movesUntilArrival === 0 && movesUntilDeparture === 2 && !trainArrived) {
         console.log('train arrival');
 
@@ -1082,6 +1123,9 @@ async function updateBoard() {
             checkmate = true;
         }
         trainArrived = true;
+        // Save board state after train arrival
+        // so if Joe Biden gambles it doesnt revive everyone who was hit by the train
+        lastBoard = structuredClone(initialBoard);
     }
     if (movesUntilDeparture === 0 ) {
         console.log('train departure');
@@ -1128,32 +1172,7 @@ async function updateBoard() {
         
         trainArrived = false;
     }
-    rowloop: for (let r = (colLength/2)-1; r <= (colLength/2); r++) {
-        for (let c = rowLength-2; c < rowLength; c++) {
-            let row;
-            let col;
-            if (flipped) { row = (colLength-r)-1; col = (rowLength-c)-1; }
-            else { row = r; col = c; }
-            if (initialBoard[row][col] !== ' ' && initialBoard[row][col].toLowerCase() !== 'a' && !casinoCaptured) {
-                if (!currentlyGambling) {
-                    currentlyGambling = true;
-                    await gamble();
-                }
-            } else if (initialBoard[row][col].toLowerCase() === 'a' && !casinoCaptured) {
-                casinoCaptured = true;
-                for (let xr = (colLength/2)-1; xr <= (colLength/2); xr++) {
-                    for (let xc = rowLength-2; xc < rowLength; xc++) {
-                        let xrow;
-                        let xcol;
-                        if (flipped) { xrow = (colLength-xr)-1; xcol = (rowLength-xc)-1; }
-                        else { xrow = xr; xcol = xc; }
-                        initialBoard[xrow] = initialBoard[xrow].substring(0, xcol) + 'x' + initialBoard[xrow].substring(parseInt(xcol) + 1);
-                    }
-                }
-                break rowloop;
-            }
-        }
-    }
+    
     if (!initialBoard.join('').includes('j')) {
         blackJoeOldSquare = null;
         blackJoeSquare = null;
@@ -1164,6 +1183,7 @@ async function updateBoard() {
     }
     if (joeBidenTurns < 1) {
         let bidenSound = null
+        joeBidenHasGambled = false;
         if (!bidensStarted) {
             ['j', 'J'].forEach(piece => {
                 let row = Math.round(Math.random() * (colLength-1));
