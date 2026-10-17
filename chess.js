@@ -1070,8 +1070,6 @@ async function updateBoard() {
             if (initialBoard[row][col] !== ' ' && initialBoard[row][col].toLowerCase() !== 'a' && !casinoCaptured) {
                 if (!currentlyGambling) {
                     if (initialBoard[row][col].toLowerCase() === 'j') {
-                        console.log(lastBoard);
-                        console.log(lastBoard);
                         // Prevent Joe Biden from infinitely gambling
                         if (!joeBidenHasGambled) {
                             // Prevent Joe Biden from despawning after gambling
@@ -1188,10 +1186,20 @@ async function updateBoard() {
             ['j', 'J'].forEach(piece => {
                 let row = Math.round(Math.random() * (colLength-1));
                 let col = Math.round(Math.random() * (rowLength-1));
-                
+
                 while (initialBoard[row][col] == 'k' || initialBoard[row][col] == 'K' || initialBoard[row][col] == 'j' || initialBoard[row][col] == 'J') {
                     row = Math.round(Math.random() * (colLength-1));
                     col = Math.round(Math.random() * (rowLength-1));
+                }
+                // If Joe Biden starts on the chick-fil-a sauce, remove the whole sauce
+                if (initialBoard[row][col].toLowerCase() === 'c' || initialBoard[row][col].toLowerCase() === 'h') {
+                    for (let r = 0; r < colLength; r++) {
+                        for (let c = 0; c < rowLength; c++) {
+                            if (initialBoard[r][c].toLowerCase() === 'c' || initialBoard[r][c].toLowerCase() === 'h') {
+                                initialBoard[r] = initialBoard[r].substring(0, c) + ' ' + initialBoard[r].substring(parseInt(c) + 1);
+                            }
+                        }
+                    }
                 }
                 
                 if (piece == 'j') { blackJoeSquare = { dataset: { row: row, col: col } } }
