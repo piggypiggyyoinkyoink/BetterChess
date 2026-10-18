@@ -1218,7 +1218,13 @@ async function updateBoard() {
         
         movesUntilArrival = 5;
         movesUntilDeparture = 2;
-        
+        // Check if train departure causes instant win
+        if (currentTurn == 0 && inCheck(initialBoard) === "black") {
+            checkmate = true;
+        }
+        if (currentTurn == 1 && inCheck(initialBoard) === "white") {
+            checkmate = true;
+        }
         trainArrived = false;
     }
     
